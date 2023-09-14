@@ -70,3 +70,24 @@ def get_subwatershed(net, link):
             lids.extend(net.loc[lid,lista].values.tolist())
     #Final subnet
     return net.loc[lids]
+
+def hlm_write_rvr(net, path):
+    '''Takes a network that has been proccessed with remove_virtual_links.py and extracts the rvr 
+    file required for HLM at the designed path'''
+    parents_name = ['us%d' % i for i in range(1,11)]
+    with open(path,'w',newline='\n') as f:
+        f.write('%d\n' % net.shape[0])
+        f.write('\n')
+        for link in net.index:
+            f.write('%d\n' % link)
+            if net.loc[link,'us1'] == -1:
+                f.write('0\n')
+            else:
+                parents = net.loc[link, parents_name].values
+                parents = parents[parents > 0]
+                f.write('%d ' % parents.size)
+                for parent in parents:
+                    f.write('%d ' % parent)
+                f.write('\n\n')            
+            f.write('\n')
+        f.close()
