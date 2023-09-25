@@ -14,8 +14,11 @@ module load gdal/2.1.3_python-3.7.0
 #variables 
 npixels=900 # Upstream area to define network
 dem=/Dedicated/IFC/Nicolas/iowa_hd/with_nhd_high/dem_cut.tif
-nhd=/Users/nicolas/2023_iowa_hd/maps/merged_BurnLines_20230912.shp
+nhd=/Dedicated/IFC/Nicolas/iowa_hd/with_nhd_high/merged_BurnLines_edited.shp
 out=/Dedicated/IFC/Nicolas/iowa_hd/with_nhd_high
+
+##################################################################################################################################
+# DEM STEPS
 
 #Merge dems
 #gdal_merge.py -ot Float32 -of GTiff -o $out/dem_merged.tif --optfile $out/files2merge.txt
@@ -26,15 +29,20 @@ out=/Dedicated/IFC/Nicolas/iowa_hd/with_nhd_high
 #Crop dem to the area of interest 
 #gdalwarp -of GTiff -cutline $out/buffer_simple.shp -cl buffer_simple -crop_to_cutline $out/dem_proj.tif $out/dem_cut.tif
 
+##################################################################################################################################
+# BURN NETWORK
+
 #Rasterizes the network
 gdal_calc.py --calc=A*0 --outfile=$out/network.tif -A $dem --overwrite
 gdal_rasterize -a depth $nhd $out/network.tif # variable case 
 #gdal_rasterize -burn 1 $nhd $out/network.tif # constant case
-#gdal_rasterize -add -burn -30 -l $dem $nhd $out/network.tif #Method that didin't worked
 
-# # # #Burns the network into the DEM
+#Burns the network into the DEM
 gdal_calc.py --calc=A-B --outfile=$out/dem_burn.tif -A $dem -B $out/network.tif --overwrite 
 #gdal_calc.py --calc=A-B*30 --outfile=$out/dem_burn.tif -A $dem -B $out/network.tif --overwrite 
+
+##################################################################################################################################
+# TAUDEM
 
 # # # Pitremove
 mpiexec -n 224 pitremove -z $out/dem_burn.tif -fel $out/demfel.tif
