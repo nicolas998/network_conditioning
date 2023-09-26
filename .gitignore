@@ -1,3 +1,5 @@
 network_conditioning.wiki
 .ipynb_checkpoints/
 notebooks/__pycache__
+local_data/
+codes/out.txt
