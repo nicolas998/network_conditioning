@@ -1,6 +1,6 @@
 import geopandas as gp 
 import numpy as np 
-
+import pandas as pd 
 
 def binary2multiple_parents(net, max_nparents = 10, remove_lenght_zero = True, reset_index = True):
     '''This function takes as an argument "n" a GeoDataFrame describing the network obtained by TauDEM

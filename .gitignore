@@ -3,3 +3,8 @@ network_conditioning.wiki
 notebooks/__pycache__
 local_data/
 codes/out.txt
+codes/task*
+codes/logs/
+codes/.qbatch/
+codes/__pycache__/*
+codes/*.pyc
