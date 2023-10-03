@@ -33,35 +33,35 @@ out=/Dedicated/IFC/Nicolas/iowa_hd/with_nhd_high
 # BURN NETWORK
 
 #Rasterizes the network
-gdal_calc.py --calc=A*0 --outfile=$out/network.tif -A $dem --overwrite
-gdal_rasterize -a depth $nhd $out/network.tif # variable case 
-#gdal_rasterize -burn 1 $nhd $out/network.tif # constant case
+# gdal_calc.py --calc=A*0 --outfile=$out/network.tif -A $dem --overwrite
+# gdal_rasterize -a depth $nhd $out/network.tif # variable case 
+# #gdal_rasterize -burn 1 $nhd $out/network.tif # constant case
 
-#Burns the network into the DEM
-gdal_calc.py --calc=A-B --outfile=$out/dem_burn.tif -A $dem -B $out/network.tif --overwrite 
+# #Burns the network into the DEM
+# gdal_calc.py --calc=A-B --outfile=$out/dem_burn.tif -A $dem -B $out/network.tif --overwrite 
 #gdal_calc.py --calc=A-B*30 --outfile=$out/dem_burn.tif -A $dem -B $out/network.tif --overwrite 
 
 ##################################################################################################################################
 # TAUDEM
 
-# # # Pitremove
-mpiexec -n 224 pitremove -z $out/dem_burn.tif -fel $out/demfel.tif
+# # # # Pitremove
+# mpiexec -n 224 pitremove -z $out/dem_burn.tif -fel $out/demfel.tif
 
-# # # D8 flow directions
-mpiexec -n 224 d8flowdir -p $out/demp.tif -sd8 $out/demsd8.tif -fel $out/demfel.tif
+# # # # D8 flow directions
+# mpiexec -n 224 d8flowdir -p $out/demp.tif -sd8 $out/demsd8.tif -fel $out/demfel.tif
 
-# # # # Contributing area
-mpiexec -n 224 aread8 -p $out/demp.tif -ad8 $out/demad8.tif
-# # #mpiexec -n 224 aread8 -p demp.tif -ad8 demad8.tif -o out1.shp -nc 
+# # # # # Contributing area
+# mpiexec -n 224 aread8 -p $out/demp.tif -ad8 $out/demad8.tif
+# # # #mpiexec -n 224 aread8 -p demp.tif -ad8 demad8.tif -o out1.shp -nc 
 
-# # # # Grid Network 
-mpiexec -n 224 gridnet -p $out/demp.tif -gord $out/demgord.tif -plen $out/demplen.tif -tlen $out/demtlen.tif
+# # # # # Grid Network 
+# mpiexec -n 224 gridnet -p $out/demp.tif -gord $out/demgord.tif -plen $out/demplen.tif -tlen $out/demtlen.tif
 
-# # # Threshold equals to 96 acres
-mpiexec -n 224 threshold -ssa $out/demad8.tif -src $out/demsrc.tif -thresh $npixels
+# # # # Threshold equals to 96 acres
+# mpiexec -n 224 threshold -ssa $out/demad8.tif -src $out/demsrc.tif -thresh $npixels
 
-#streamnet
-mpiexec -n 224 streamnet -fel $out/demfel.tif -p $out/demp.tif -ad8 $out/demad8.tif -src $out/demsrc.tif -ord $out/demord.tif -tree $out/demtree.txt -coord $out/demcoord.txt -net $out/demnet.shp -w $out/demw.tif
+# #streamnet
+# mpiexec -n 224 streamnet -fel $out/demfel.tif -p $out/demp.tif -ad8 $out/demad8.tif -src $out/demsrc.tif -ord $out/demord.tif -tree $out/demtree.txt -coord $out/demcoord.txt -net $out/demnet.shp -w $out/demw.tif
 
 #convert watersheds to shp 
 gdal_polygonize.py $out/demw.tif -b 1 -f "ESRI Shapefile" $out/hills.shp hills LINKNO 

@@ -1,6 +1,7 @@
 import geopandas as gp 
 import numpy as np 
 import pandas as pd 
+import json 
 
 def binary2multiple_parents(net, max_nparents = 10, remove_lenght_zero = True, reset_index = True):
     '''This function takes as an argument "n" a GeoDataFrame describing the network obtained by TauDEM
@@ -74,7 +75,7 @@ def get_subwatershed(net, link):
 def hlm_write_rvr(net, path):
     '''Takes a network that has been proccessed with remove_virtual_links.py and extracts the rvr 
     file required for HLM at the designed path'''
-    parents_name = ['us%d' % i for i in range(1,11)]
+    parents_name = ['us%d' % i for i in range(1,net.np.max()+1)]
     with open(path,'w',newline='\n') as f:
         f.write('%d\n' % net.shape[0])
         f.write('\n')
@@ -91,3 +92,33 @@ def hlm_write_rvr(net, path):
                 f.write('\n\n')            
             f.write('\n')
         f.close()
+        
+def hlm_load_prm_configs(path = '/home/nicolas/hpchome/network_conditioning/codes/model_prm_config.json'):
+    with open(path,'r') as f:
+        model_prm = json.load(f)
+    return model_prm
+
+def hlm_write_prm(net, path, lid = None, model='608', modprm = None):
+    '''Writes a prm file to a path using a table with the network (net) and 
+    the model parameters (if constant) using codes/model_prm_config.json
+    for distributed parameters set a list of parameters represented in the network 
+    table (not implemented)'''
+    #Loads the dict with the model parameters for the constant case
+    if modprm is None:
+        modprm = hlm_load_prm_configs()
+    #Test if there will be a subnet
+    if lid is not None:
+        net = get_subwatershed(net, lid)
+    #Compute the basic attributes of hill area, upstream area, and length    
+    net['area'] = (net['DSContArea'] - net['USContArea'])/1e6
+    net['area_up'] = net['DSContArea'] / 1e6
+    net['length'] = net['Length']/1000
+    #Writes down the file 
+    with open(path, 'w') as f:
+        f.write('%d\n\n' % net.shape[0])
+        for lid in net.index:
+            f.write('%d\n' % lid)
+            f.write('%.4f %.4f %.4f ' % tuple(net.loc[lid,['area_up', 'Length','area']].values.tolist()))
+            if model is not None:
+                f.write('%s' % modprm[model][0])
+            f.write('\n\n')
