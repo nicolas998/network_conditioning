@@ -89,7 +89,7 @@ def hlm_write_rvr(net, path):
                 f.write('%d ' % parents.size)
                 for parent in parents:
                     f.write('%d ' % parent)
-                f.write('\n\n')            
+                f.write('\n')            
             f.write('\n')
         f.close()
         
@@ -98,7 +98,7 @@ def hlm_load_prm_configs(path = '/home/nicolas/hpchome/network_conditioning/code
         model_prm = json.load(f)
     return model_prm
 
-def hlm_write_prm(net, path, lid = None, model='608', modprm = None):
+def hlm_write_prm(net, path, lid = None, model='608', modprm = None, min_area = 0.01):
     '''Writes a prm file to a path using a table with the network (net) and 
     the model parameters (if constant) using codes/model_prm_config.json
     for distributed parameters set a list of parameters represented in the network 
@@ -110,15 +110,17 @@ def hlm_write_prm(net, path, lid = None, model='608', modprm = None):
     if lid is not None:
         net = get_subwatershed(net, lid)
     #Compute the basic attributes of hill area, upstream area, and length    
-    net['area'] = (net['DSContArea'] - net['USContArea'])/1e6
-    net['area_up'] = net['DSContArea'] / 1e6
-    net['length'] = net['Length']/1000
+    net['area_km'] = net['area']/1e6
+    net.loc[net['area_km'] < min_area, 'area_km'] = 0.01
+    net['area_up_km'] = net['DSContArea'] / 1e6
+    net['length_km'] = net['Length']/1000
+    net.loc[net['length_km'] < min_area, 'length_km'] = 0.01
     #Writes down the file 
     with open(path, 'w') as f:
         f.write('%d\n\n' % net.shape[0])
         for lid in net.index:
             f.write('%d\n' % lid)
-            f.write('%.4f %.4f %.4f ' % tuple(net.loc[lid,['area_up', 'Length','area']].values.tolist()))
+            f.write('%.4f %.4f %.4f ' % tuple(net.loc[lid,['area_up_km', 'length_km','area_km']].values.tolist()))
             if model is not None:
                 f.write('%s' % modprm[model][0])
             f.write('\n\n')

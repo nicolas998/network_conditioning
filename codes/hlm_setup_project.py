@@ -8,6 +8,25 @@ import os
 import pandas as pd
 import glob 
 
+def create_project_folder(path, project_name):
+    # Define the folder and subfolder names
+    main_folder = path + project_name    
+
+    # Check if the main folder exists
+    if not os.path.exists(main_folder):
+        # Create the main folder if it doesn't exist
+        os.makedirs(main_folder)
+
+    for sub_folder in ['dats','globals','states']:
+        # Construct the subfolder path
+        subfolder_path = os.path.join(main_folder, sub_folder)
+
+        # Check if the subfolder exists
+        if not os.path.exists(subfolder_path):
+            # Create the subfolder if it doesn't exist
+            os.makedirs(subfolder_path)
+
+
 rain_products = {
     'MRMS':{'path':'/Dedicated/MRMS/HLM_plus_v202310/bin_mrms/'}
 }
@@ -62,8 +81,12 @@ parser.add_argument('--tempth', type=str, default='0')
 parser.add_argument('--frozengr', type=str, default='0')
 parser.add_argument('--temprange', type=str, default='20')
 parser.add_argument('--control', type=str, default='%sifis_usgs.sav' % base_path)
+parser.add_argument('--prm', type=str, default='%sifis_iowa.prm' % base_path)
+parser.add_argument('--rvr', type=str, default='%sifis_iowa.rvr' % base_path)
 args = parser.parse_args()
 
+#Create a folder for the project if it does not exists
+create_project_folder(base_path, args.project)
 
 #Reads the baseglobal file
 f = open('%stemplates/baseglobal.gbl' % base_path,'r') 
@@ -80,8 +103,8 @@ runBaseTemp = Template(t[-2])
 runFixerTemp = Template(t[-1])
 
 #Set the path to the prm and rvr files
-prmFile = '%sifis_iowa.prm' % base_path
-rvrFile = '%sifis_iowa.rvr' % base_path
+prmFile = '%s%s' % (base_path, args.prm)
+rvrFile = '%s%s' % (base_path, args.rvr)
 
 
 #Sets the global parameters and the number of globals
