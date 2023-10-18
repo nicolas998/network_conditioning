@@ -31,7 +31,8 @@ rain_products = {
     'MRMS':{'path':'/Dedicated/MRMS/HLM_plus_v202310/bin_mrms/'}
 }
 
-base_path = '/Users/nicolas/network_conditioning/local_data/ifis_config/'
+base_path = '/Users/nicolas/network_conditioning/local_data/ifis_config/base_data/'
+out_path = '/Users/nicolas/network_conditioning/local_data/ifis_config/'
 
 ##################################################################################################
 #Parse arguments to the program
@@ -86,7 +87,7 @@ parser.add_argument('--rvr', type=str, default='%sifis_iowa.rvr' % base_path)
 args = parser.parse_args()
 
 #Create a folder for the project if it does not exists
-create_project_folder(base_path, args.project)
+create_project_folder(out_path, args.project)
 
 #Reads the baseglobal file
 f = open('%stemplates/baseglobal.gbl' % base_path,'r') 
@@ -119,16 +120,15 @@ str_date1 = date1[0].strftime('%Y%m')
 str_date2 = date2[0].strftime('%Y%m')
 
 #sets the run file and the global file names
-project_path = '%s%s/' % (base_path, args.project)
-name_run = '%s%s/runhlm_%s_%s.sh' % (base_path, args.project, str_date1, str_date2)
+project_path = '%s%s/' % (out_path, args.project)
+name_run = '%s%s/runhlm_%s_%s.sh' % (out_path, args.project, str_date1, str_date2)
 name_gbl = 'g.gbl'
 
 #Opens the run file to start writing on it
 f_run = open(name_run,'w')
 _name = '%s_%s' % (args.project, str_date1)
 f_run.write(runHeadTemp.safe_substitute({'name':_name, 'nprocess': args.nproc}))
-#f_run.write('mkdir /nfsscratch/Users/nicolas/' + watershed + '_' + args.product + '/\n')
-f.close()
+#f.close()
 
 #Gets the slices to run the model
 if args.yearly == 0:
@@ -200,7 +200,7 @@ if args.yearly == 0:
                 'str_date2':str_date2,
                 'datName':'%sdats/%s_%s.dat' % (project_path, str_date1, str_date2),  #project_path + 'dats/' +  + '_'+args.product + '_f' + args.rainFactor + '_'+ str_date1 + '_' + str_date2 + '.dat',
                 'recFile': '%sstates/%s_%s.rec' % (project_path, str_date1, str_date2),#project_path + 'states/' + + '_'+args.product + '_f' + args.rainFactor + '_' + str_date1 + '_' + str_date2 + '.rec',
-                'rainPath': rain_path + str(start.year) + '/',
+                'rainPath': rain_path + str(start.year) + '_v2/',
                 'etPath': etPath,
                 'tempPath': args.tempPath + '/' + str(start.year) + '/',
                 'soil_tempPath': args.soil_tempPath + '/' + str(start.year) + '/',
@@ -249,8 +249,8 @@ if args.yearly == 0:
         if freno:
             break
 #Write the command that post-process the data 
-# cmd = 'python3 /Users/nicolas/2023_rain_unc_inf/dats2parquet.py %s %s %s %s -r\n' % (args.product, watershed, args.rainFactor, args.region)
-# f_run.write(cmd)
+cmd  = 'python3 /Users/nicolas/network_conditioning/codes/dats2parquet.py %sdats/ %ssim_flows.gzip -r' % (project_path, project_path)
+f_run.write(cmd)
 # #Erase dats and states 
 # cmd  = 'rm %sdats/%s_%s_f%s*\n' % (project_path, watershed, args.product, args.rainFactor)
 # f_run.write(cmd)

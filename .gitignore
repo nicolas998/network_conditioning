@@ -7,6 +7,7 @@ codes/task*
 codes/logs/
 codes/.qbatch/
 codes/__pycache__/*
+codes/__pycache__/
 codes/*.pyc
 hlm_files/*ifis*
 hlm_files/*iowa*
