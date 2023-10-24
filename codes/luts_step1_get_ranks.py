@@ -25,6 +25,6 @@ if __name__=='__main__':
     #Sve a tif map with the ranks 
     #ranks_slice = ranks[Rb:Rb+Nr1, Cb:Ca]
     #rasf.save_array2raster(ranks_slice, args.ranks, prop_s)
-    rasf.save_array2raster(ranks, args.ranks, prop_o)
+    rasf.save_array2raster(ranks, prop_o, args.ranks)
     
     
