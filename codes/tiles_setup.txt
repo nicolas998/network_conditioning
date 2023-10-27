@@ -1,0 +1,2 @@
+python tiles_step1_simplify.py ../local_data/tiles/net30e7.shp ../local_data/tiles/net_7z.json 30e7 15000 500 # Setup for zoom level 7
+python tiles_step1_simplify.py ../local_data/tiles/net20e7.shp ../local_data/tiles/net_8z.json 20e7 15000 500 # Setup for zoom level 8
