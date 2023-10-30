@@ -99,10 +99,10 @@ def main(path, area, len):
                     proccessed.append(link)
         print('Step 2: Update. Merging finished')
         n2 = gp.GeoDataFrame(n2, geometry=geometries, crs=n.crs)    
-        n2.rename(columns={0:'LINKNO', 1:'length'}, inplace = True)
+        n2.rename(columns={0:'lid', 1:'length'}, inplace = True)
     else:
         print('Step 2: skiped, no merging downstream using lengths as they are.')    
-        n2 = n[['LINKNO','geometry']]
+        n2 = n[['lid','geometry']]
 
     print('Step 3: Start simplifying, rounding coordinates, and save.')        
     #Simplify the geometry     

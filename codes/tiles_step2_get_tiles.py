@@ -39,12 +39,12 @@ def main(src):
 
 #cmd_ogr = "/usr/bin/ogr2ogr -f GeoJSON -t_srs EPSG:4326  /home/web/inun/o_gjson /nfs/mrs/real_time/30Aug2021_07hr/{i_shp}"
 
-cmd_cut = "/usr/local/bin/tippecanoe --minimum-zoom=8 --coalesce-smallest-as-needed --maximum-zoom=8 -f "
-cmd_cut += "--projection=EPSG:4326 --no-simplification-of-shared-nodes --no-tile-stats --maximum-tile-bytes=20240 "
-cmd_cut += "--output-to-directory /home/nicolas/network_conditioning/local_data/tiles/ /home/nicolas/network_conditioning/local_data/tiles/net_8z.json"
+cmd_cut = "/usr/local/bin/tippecanoe --minimum-zoom=7 --coalesce-smallest-as-needed --maximum-zoom=7 -f "
+cmd_cut += "--projection=EPSG:4326 --no-simplification-of-shared-nodes --no-tile-stats --maximum-tile-bytes=80240 "
+cmd_cut += "--output-to-directory /home/nicolas/network_conditioning/local_data/tiles/ /home/nicolas/network_conditioning/local_data/tiles/net_7z.json"
 system(cmd_cut)
 
-lst = glob('/home/nicolas/network_conditioning/local_data/tiles/*/*/*.pbf')
+lst = glob('/home/nicolas/network_conditioning/local_data/tiles/7/*/*.pbf')
 if __name__ == "__main__":
     pool = Pool(processes=4)
     pool.map(main, lst)
