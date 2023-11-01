@@ -6,6 +6,8 @@ parser = argparse.ArgumentParser(description='Using the hillslopes and the ranks
 parser.add_argument('hills',type=str, help = 'path to the hills vector')
 parser.add_argument('ranks',type=str, help = 'path to the vector with the ranks')
 parser.add_argument('lut',type=str, help = 'path to the numpy file with the lids, ranks, and weigths')
+parser.add_argument('-n','--rname',type=str, help = 'name of the field that indicates the ranks in the rank shapefile',
+                    default = 'rank')
 args = parser.parse_args()
 
 # execute if main 
@@ -22,7 +24,7 @@ if __name__=='__main__':
 
     #Gets the weigth
     lids = union.index.values
-    ranks = union['rank'].values
+    ranks = union[args.rname].values
     areas = union['area_r'].values
     w = np.zeros(union.shape[0])
     for lid in np.unique(lids):
