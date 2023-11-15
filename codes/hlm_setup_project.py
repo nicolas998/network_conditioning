@@ -89,7 +89,7 @@ parser.add_argument('--recStep', type=str, default='')
 args = parser.parse_args()
 
 #Create a folder for the project if it does not exists
-create_project_folder(out_path, args.project)
+create_project_folder(out_path, args.project) 
 
 #Reads the baseglobal file
 f = open('%stemplates/baseglobal.gbl' % base_path,'r') 
