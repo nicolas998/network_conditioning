@@ -124,3 +124,37 @@ def hlm_write_prm(net, path, lid = None, model='608', modprm = None, min_area = 
             if model is not None:
                 f.write('%s' % modprm[model][0])
             f.write('\n\n')
+            
+def get_lids_downstream(lid, net):
+    '''Function that gets the list of downstream segments given a linkid'''
+    #Define list of lids 
+    lids_down = []
+    while lid > 0:
+        lids_down.append(lid)
+        lid = net.loc[lid, 'ds']
+    return lids_down
+
+
+def get_lids_upstream(lid, net, max_length = 1500):
+    '''Function to get the upstream segments of a given lid along the main channel.
+    Stop when the accumulated length is above the max_length'''
+    #Define local variables 
+    length = net.Length.values
+    area = net.DSContArea.values
+    lids = net.index.values
+    ds = net.ds.values
+    tot_lenght = length[np.where(lid == lid)[0]]
+    lids_up = []
+    flag = True
+    while flag:
+        up = np.where(ds == lid)[0]
+        if up.size > 0:
+            pos = up[np.argmax(area[up])]
+            lid = lids[pos]
+            tot_lenght += length[pos]
+            lids_up.append(lid)
+        else:
+            flag = False            
+        if tot_lenght > max_length:
+            flag = False
+    return lids_up
