@@ -84,6 +84,8 @@ parser.add_argument('--temprange', type=str, default='20')
 parser.add_argument('--control', type=str, default='%sifis_usgs.sav' % base_path)
 parser.add_argument('--prm', type=str, default='%sifis_iowa.prm' % base_path)
 parser.add_argument('--rvr', type=str, default='%sifis_iowa.rvr' % base_path)
+parser.add_argument('--recType', type=str, default='1')
+parser.add_argument('--recStep', type=str, default='')
 args = parser.parse_args()
 
 #Create a folder for the project if it does not exists
@@ -187,6 +189,11 @@ if args.yearly == 0:
             else:
                 etPath = args.etPath + args.region + '/' + start.year + '/'
             
+            if args.recType == '1':
+                recFile = '%sstates/%s_%s.rec' % (project_path, str_date1, str_date2)
+            elif args.recType == '4':
+                recFile = '%sstates/snap.h5' % (project_path)
+            
             a ={'date1': s.strftime('%Y-%m-%d %H:%M'),
                 'date2': e.strftime('%Y-%m-%d %H:%M'),
                 'prmFile':prmFile,
@@ -198,8 +205,10 @@ if args.yearly == 0:
                 'unix2': aux.__datetime2unix__(e),
                 'str_date1':str_date1,
                 'str_date2':str_date2,
-                'datName':'%sdats/%s_%s.dat' % (project_path, str_date1, str_date2),  #project_path + 'dats/' +  + '_'+args.product + '_f' + args.rainFactor + '_'+ str_date1 + '_' + str_date2 + '.dat',
-                'recFile': '%sstates/%s_%s.rec' % (project_path, str_date1, str_date2),#project_path + 'states/' + + '_'+args.product + '_f' + args.rainFactor + '_' + str_date1 + '_' + str_date2 + '.rec',
+                'datName':'%sdats/%s_%s.dat' % (project_path, str_date1, str_date2),  
+                'recFile': recFile,
+                'recType': args.recType,
+                'recStep': args.recStep,
                 'rainPath': rain_path + str(start.year) + '_v2/',
                 'etPath': etPath,
                 'tempPath': args.tempPath + '/' + str(start.year) + '/',
@@ -224,9 +233,14 @@ if args.yearly == 0:
             a.update({'global_params': params})
             a.update({'model_uid': args.model})
 
-
-
-            initial = '%sstates/%s_%s.rec' % (project_path, str_date1, str_date2) #project_path + 'states/' + '_'+args.product + '_f' + args.rainFactor + '_'+ str_date1 + '_' + str_date2 + '.rec'                        
+            #Gets the next initial state 
+            if args.recType == '1':
+                initial = '%sstates/%s_%s.rec' % (project_path, str_date1, str_date2) #project_path + 'states/' + '_'+args.product + '_f' + args.rainFactor + '_'+ str_date1 + '_' + str_date2 + '.rec'                        
+            elif args.recType == '4':
+                unix = aux.__datetime2unix__(e)
+                initial = '%sstates/snap_%d.h5' % (project_path, unix) 
+                initialType = 4
+                
             periods += 1
             shortgbl = '%sglobals/step_%s_%s.gbl' % (project_path, a['str_date1'], a['str_date2'])
             
