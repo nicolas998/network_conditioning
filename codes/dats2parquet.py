@@ -4,7 +4,7 @@ import glob
 import pandas as pd 
 from ifis_tools import series_tools as ser 
 import argparse
-import geopandas as gp
+#import geopandas as gp 
 import numpy as np
 #import identify_events as ie 
 #from scipy import stats
